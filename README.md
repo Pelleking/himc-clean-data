@@ -21,19 +21,37 @@ of the three hospitals and the prototype back-test.
 | `clean/data_quality_log.csv` | The 53 problems found: what was wrong, how many rows, what was done |
 | `clean/uk_kingsmere/`, `clean/kenya_kisima/`, `clean/indonesia_sukamaju/`, `clean/prototype/` | The 25 cleaned tables as CSV |
 | `cleaning/clean_data.py` | The script that produced them from the raw files |
-| `src/himc_mcp/` | The MCP server, with the same tables as one SQLite database |
+| `src/himc_mcp/` | The MCP server to run on your own computer, with the same tables as one SQLite database |
+| `worker/` | The hosted MCP server (Cloudflare Worker + D1) behind the link below |
 
 `clean/uk_kingsmere/spells.csv.gz` (151,217 hospital stays) is compressed because it is 64 MB as
 plain CSV. Double-click to unpack it, or read it directly: `pd.read_csv("clean/uk_kingsmere/spells.csv.gz")`.
 
-## Use it in ChatGPT or Claude with nothing to install
+## Use it in Claude or ChatGPT from a link (nothing to download)
+
+The data is hosted as a remote MCP server. Add this address as a custom connector:
+
+```
+https://himc-mcp.pellefredrikson.workers.dev/mcp
+```
+
+- **Claude** (web, desktop or phone): Settings › Connectors › Add custom connector. Name it `HIMC`,
+  paste the address, leave the other fields empty, and add it. In a new chat, switch the connector on.
+- **ChatGPT:** Settings › Apps & Connectors › Advanced settings › turn on Developer mode, then create
+  a connector with the address above and authentication set to none. Switch it on in a new chat.
+
+Then paste the prompt in [`PROMPT.md`](PROMPT.md), or just ask your questions. The server is
+read-only, needs no sign-in, and holds only the fictional data. Custom connectors depend on your
+plan in both apps; if yours does not offer them, use the file route below.
+
+## Use it in ChatGPT or Claude by attaching a file
 
 Download **[himc.sqlite.gz](https://github.com/Pelleking/himc-clean-data/releases/latest/download/himc.sqlite.gz)**
-(16 MB: every table in one database), attach it to a new chat and paste the prompt in
-[`PROMPT.md`](PROMPT.md). The assistant unpacks it with its own code tool and answers questions
-by querying it. The prompt sets the assistant up without telling it what to look for. In Claude, switch on *Code execution and file creation* under Settings › Capabilities first.
+(16 MB: every table in one database), attach it to a new chat and paste the second prompt in
+[`PROMPT.md`](PROMPT.md). The assistant unpacks it with its own code tool. In Claude, switch on
+*Code execution and file creation* under Settings › Capabilities first.
 
-## Use it from an AI assistant (MCP)
+## Run the MCP server on your own computer
 
 The server is read-only: it answers `SELECT` queries and cannot change anything. You need
 [uv](https://docs.astral.sh/uv/getting-started/installation/) installed; nothing else, and no

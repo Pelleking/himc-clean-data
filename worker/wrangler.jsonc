@@ -1,0 +1,10 @@
+{
+  // Remote MCP server for the cleaned HIMC data room (fictional teaching data).
+  "name": "himc-mcp",
+  "main": "src/index.js",
+  "compatibility_date": "2026-11-01",
+  "observability": { "enabled": true },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "himc", "database_id": "ddd2ef0e-19ec-4845-97cc-646743f1f217" }
+  ]
+}
