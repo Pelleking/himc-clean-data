@@ -38,7 +38,7 @@ def database() -> Path:
     if os.environ.get("HIMC_DB"):
         return Path(os.environ["HIMC_DB"])
     cache = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "himc-mcp"
-    target = cache / "himc-0.1.0.sqlite"
+    target = cache / "himc-0.1.1.sqlite"
     if not target.exists():
         cache.mkdir(parents=True, exist_ok=True)
         part = target.with_suffix(".part")
@@ -56,7 +56,7 @@ def connect() -> sqlite3.Connection:
 
 
 def tables(con) -> list[str]:
-    return [r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name")]
+    return [r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE '\\_%' ESCAPE '\\' ORDER BY name")]
 
 
 @mcp.tool()

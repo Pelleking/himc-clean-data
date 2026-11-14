@@ -26,6 +26,13 @@ of the three hospitals and the prototype back-test.
 `clean/uk_kingsmere/spells.csv.gz` (151,217 hospital stays) is compressed because it is 64 MB as
 plain CSV. Double-click to unpack it, or read it directly: `pd.read_csv("clean/uk_kingsmere/spells.csv.gz")`.
 
+## Use it in ChatGPT or Claude with nothing to install
+
+Download **[himc.sqlite.gz](https://github.com/Pelleking/himc-clean-data/releases/latest/download/himc.sqlite.gz)**
+(16 MB: every table in one database), attach it to a new chat and paste the prompt in
+[`PROMPT.md`](PROMPT.md). The assistant unpacks it with its own code tool and answers questions
+by querying it. In Claude, switch on *Code execution and file creation* under Settings › Capabilities first.
+
 ## Use it from an AI assistant (MCP)
 
 The server is read-only: it answers `SELECT` queries and cannot change anything. You need
