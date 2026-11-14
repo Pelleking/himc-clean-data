@@ -16,7 +16,7 @@ of the three hospitals and the prototype back-test.
 
 | Path | What it is |
 |---|---|
-| `clean/README_CLEAN_DATA.md` | **Read this first.** What each table is, the cleaning rules, and the caveats |
+| `clean/README_CLEAN_DATA.md` | **Read this first.** What each table is, the cleaning rules, and the caveats. Its last two sections give a first finding and starter questions; skip them if you want to form your own view (the assistant is not shown them) |
 | `clean/catalog.csv` | Every table with its row and column counts |
 | `clean/data_quality_log.csv` | The 53 problems found: what was wrong, how many rows, what was done |
 | `clean/uk_kingsmere/`, `clean/kenya_kisima/`, `clean/indonesia_sukamaju/`, `clean/prototype/` | The 25 cleaned tables as CSV |
@@ -31,7 +31,7 @@ plain CSV. Double-click to unpack it, or read it directly: `pd.read_csv("clean/u
 Download **[himc.sqlite.gz](https://github.com/Pelleking/himc-clean-data/releases/latest/download/himc.sqlite.gz)**
 (16 MB: every table in one database), attach it to a new chat and paste the prompt in
 [`PROMPT.md`](PROMPT.md). The assistant unpacks it with its own code tool and answers questions
-by querying it. In Claude, switch on *Code execution and file creation* under Settings › Capabilities first.
+by querying it. The prompt sets the assistant up without telling it what to look for. In Claude, switch on *Code execution and file creation* under Settings › Capabilities first.
 
 ## Use it from an AI assistant (MCP)
 
@@ -61,18 +61,13 @@ claude mcp add himc -- uvx --from git+https://github.com/Pelleking/himc-clean-da
 Restart the client. The first start takes a little longer: it downloads the package and unpacks
 the database (about 100 MB) into `~/.cache/himc-mcp`.
 
-Then ask in plain language, for example:
-
-- "Using the himc tools, what is in the data and what should I be careful with?"
-- "How often was Kingsmere at alert level 4, by month?"
-- "Does the Horizon prototype beat 'same as yesterday', and how often does the real value fall inside its 80% range?"
-- "What share of Kisima's ward-nights are missing or don't add up?"
+Then ask your questions in plain language. The server describes the data and its caveats; it does not suggest what to look for or what to conclude.
 
 ### Tools
 
 | Tool | What it does |
 |---|---|
-| `overview` | The data notes: tables, cleaning rules, caveats, starter questions |
+| `overview` | The data notes: tables, cleaning rules, caveats |
 | `list_tables` | All 26 tables with row and column counts |
 | `describe_table` | Columns, types, sample rows and data-quality flag counts for one table |
 | `query` | One read-only SQLite `SELECT`; at most 1,000 rows back, 20-second limit |

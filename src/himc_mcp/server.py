@@ -28,7 +28,7 @@ FICTIONAL = ("All of this data is fictional teaching material: the company, the 
 mcp = MCPServer("himc", instructions=(
     "Cleaned tables from the HIMC data room: a fictional UK hospital (Kingsmere), a fictional Kenyan county hospital (Kisima), "
     "a fictional Indonesian regional hospital (Sukamaju) and the back-test of a fictional bed-forecasting prototype. " + FICTIONAL +
-    " Start with `overview`, then `list_tables` and `describe_table`, then `query` with SQLite SQL. "
+    " Start with `overview`, then `list_tables` and `describe_table`, then `query` with SQLite SQL. Answer the question asked from the data, show the numbers and the table they came from, and do not volunteer conclusions or recommendations the user did not ask for. "
     "Columns starting `dq_` flag data-quality problems (1 = problem present); `*_raw` columns hold the value before correction. "
     "Check `data_quality_log` before trusting a trend."))
 
@@ -38,7 +38,7 @@ def database() -> Path:
     if os.environ.get("HIMC_DB"):
         return Path(os.environ["HIMC_DB"])
     cache = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "himc-mcp"
-    target = cache / "himc-0.1.1.sqlite"
+    target = cache / "himc-0.1.2.sqlite"
     if not target.exists():
         cache.mkdir(parents=True, exist_ok=True)
         part = target.with_suffix(".part")
@@ -61,7 +61,7 @@ def tables(con) -> list[str]:
 
 @mcp.tool()
 def overview() -> str:
-    """What the data is, how it was cleaned, the caveats to respect before analysing, and starter questions. Read this first."""
+    """What the tables are, how the data was cleaned and the caveats to respect before analysing. Read this first."""
     text = resources.files("himc_mcp").joinpath("data/README_CLEAN_DATA.md").read_text(encoding="utf-8")
     return "NOTE: " + FICTIONAL + "\n\n" + text
 
