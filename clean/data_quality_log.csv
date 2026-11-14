@@ -1,0 +1,54 @@
+dataset,issue,rows_affected,action,how_found
+uk.spells,"Exact duplicate rows (same spell_id, every field identical)",181,Dropped,profiling
+uk.spells,"Test/dummy patients (specialty TEST, ward TEST/ZZTEST, age 121/126, spell ids *99xxxxxx)",31,Dropped,profiling
+uk.spells,Migration twins: stay present in both LegacyPAS and CoreliaEPR (go-live 11/12 Oct 2024),114,"Dropped the PAS copy, kept the EPR copy (identical dates; EPR has the final ward)",data notes #8 + check
+uk.spells,"Ward codes differ between PAS (WD01, AMU1, AEC...) and EPR (KRI-W01...)",151217,Mapped both to reporting ward codes from wards.csv; originals kept in *_raw,data notes #1
+uk.spells,"Admission method: 20 hand-typed spellings in PAS ('EMERGENCY - A&E', 'Emergency-A & E'...) vs national codes in EPR",151217,Harmonised to national code + label; unmapped: 0,data notes #1
+uk.spells,PAS discharge time defaulted to 00:00 when clerk typed only a date,2463,Flagged dq_pas_default_discharge_time; use discharge_date not the time,data notes #5
+uk.spells,Discharge 00:00 default made same-day discharges appear to leave before arriving,662,Set discharge_datetime = admission_datetime (date unchanged),profiling
+uk.spells,"Discharge date earlier than admission date (genuine date error, e.g. admitted 2023-01-30 discharged 2022-06-12)",58,Flagged dq_discharge_before_admission; discharge left as recorded - exclude from LOS work,profiling
+uk.spells,PAS stays admitted 2023-24 with no discharge date and never migrated to EPR (discharge never keyed),190,Flagged dq_pas_lost_discharge; discharge_date_imputed = admission date + los_nights,profiling
+uk.spells,EPR stays with no discharge = still in hospital at 31 Oct 2026 cut-off,505,Kept; flagged still_in_hospital_at_cutoff (right-censored LOS),data notes #2
+uk.spells,los_nights disagrees with admission/discharge dates,58,Flagged dq_los_mismatch,profiling
+uk.spells,Reached a bed before the decision to admit,41,Flagged dq_admit_before_dta,profiling
+uk.spells,Decision-to-admit time exactly 07:30 ~8x more often than chance (likely default/handover time),639,Flagged dq_dta_0730_default; treat ED wait for these as unreliable,profiling
+uk.spells,"EPR downtime 12-16 May 2026: admissions back-entered from paper, ~40% fewer than normal, many times rounded to the hour",302,Flagged dq_downtime_may2026; daily counts for these days are under-counts,data notes #7 + check
+uk.spells,"SDEC stays recorded as spells ~900/month until Feb 2025, ~140/month after unit expanded 3 Mar 2025 (recording change, not demand)",23578,Added is_sdec and is_bedded_admission; exclude SDEC for any trend over time,data notes #11 + check
+uk.spells,Diagnosis group blank for recent discharges (clinical coding 6-8 weeks behind),2268,Left blank; flag dq_not_yet_coded,data notes #3
+uk.spells,Ethnicity blank/'Not stated'/'Not known' (worse in PAS),14857,Blank recoded to 'Not recorded',data notes #4
+uk.spells,Row count,151217,151543 raw rows -> 151217 clean stays,profiling
+uk.sitrep,2025-03-20 entered twice with different discharges (69 vs 73) and nctr_not_discharged (43 vs 40),2,Kept the second (later) row; flagged dq_duplicate_day,profiling
+uk.sitrep,"Typing error, extra digit in ed_attendances (2023-09-01)",1,Divided by 10 (value then matches neighbouring days); original noted in dq_typo_corrected,outlier scan
+uk.sitrep,"Typing error, extra digit in adult_ga_beds_occupied (2025-11-16)",1,Divided by 10 (value then matches neighbouring days); original noted in dq_typo_corrected,outlier scan
+uk.sitrep,"Typing error, extra digit in nctr_patients_0800 (2026-09-04)",1,Divided by 10 (value then matches neighbouring days); original noted in dq_typo_corrected,outlier scan
+uk.sitrep,Blank cells in manual return (weekend single-person entry),11,Left blank (not imputed),data notes #9
+uk.daily_panel,Surveillance figures are published ~4 days after the week they describe,1310,Added surveillance_known_on_day - a forecast may only use values already published (avoid leakage),check
+uk.ward_census,Ward W15 changed from elective orthopaedics to general/elderly medicine on 1 Sep 2025,426,Added specialty_group_actual (W15 = medical from 2025-09-01),wards.csv notes
+uk.ward_census,"Patients above open beds (AMU, children's, maternity, neonatal) - allowed by full-capacity protocol",280,Kept; added patients_over_open_beds,data dictionary
+uk.temp_staffing,"858 vacancy requests with lead time exactly 1,344 h (56 days) logged at 07:00/19:00 - block bookings, not real lead time",858,Flagged dq_lead_time_1344h_default,profiling
+uk.temp_staffing,No requests before 1 Apr 2025 (booking system replaced; history not migrated),0,Note only: do not compare with earlier years,data notes
+uk.elective_tci,date_booked earlier than date_added_to_waiting_list,1634,Flagged,profiling
+uk.elective_tci,Admitted bookings whose spell_id is not in the stay files,10,Left as is (information team says a few are missing),profiling
+ke.bed_state,Ward-nights with no page in the book (missing photos/pages),331,"Added as empty rows, dq_missing_day=1",profiling
+ke.bed_state,Brought forward + in - out != remaining at midnight (arithmetic or transcription error),322,Flagged; recalculated value kept alongside,profiling
+ke.bed_state,Brought-forward does not equal the previous night's remaining,267,Flagged,profiling
+ke.bed_state,"Typist flagged legibility (faint, torn, two entries, totals missing)",100,Flagged,profiling
+ke.bed_state,nurses_on_night_duty blank or 0,1019,Left as is; 0 is often a blank written as 0 - check before use,profiling
+ke.register,"Dates in 4 formats (01/04/2026, 1/4/26, 07-Apr-26, 01.04.2026)",4601,Parsed day-first; unparsed admission dates: 0,profiling
+ke.register,"Age written as '3', '3 yrs', '2yrs', '6/12' (=6 months), '1 6/12' (=1.5 y), '7 mths', 'Adult'",4601,Converted to age_years; 'Adult' left blank with is_adult_unspecified=1,profiling
+ke.register,Sex as F/M/f/m/Female/Male/blank,132,Standardised to M/F/Unknown,profiling
+ke.register,Residence: 22 spellings of 7 places,4601,Standardised to 7 areas + Outside county + Not recorded. NB 'Rabuor' assumed = Rabuor North,profiling
+ke.register,"Outcome 'D' (1,828 rows) could mean Discharged or Died",1828,Mapped to Discharged (else ward mortality would be ~45%); flagged - confirm with ward staff,profiling
+ke.register,"Diagnosis: 83 free-text variants incl. abbreviations (PNA, GE, SAM, RVD, ISS, CCF...)",4601,Grouped by first matching keyword into diagnosis_group (first condition wins for combos like 'malaria + anaemia'),profiling
+ke.register,Wrong year written (2025 instead of 2026) giving stays of +/-365 days,144,Year set to 2026; flagged dq_year_corrected,profiling
+ke.register,Discharge date still before admission date after year fix,0,Flagged,profiling
+ke.khis_monthly,Ward-months not submitted (blank figures),11,Left blank; flagged,profiling
+ke.khis_monthly,Reported bed_occupancy_pct differs from inpatient_days / (beds x days),4,"Flagged, recalculated column added",profiling
+id.census,"Census does not balance on 9-11 Sep 2025 (SIMRS outage, keyed manually)",7,Flagged,profiling
+id.census,Bed numbers fall 338 -> 304 on 1 Jul 2025 (KRIS room standard) - occupancy is not comparable before/after on raw counts,5856,Added post_kris flag; occupancy_pct uses each day's own beds,hospital profile
+id.admissions,Dates DD/MM/YYYY,42532,Parsed to ISO dates,profiling
+id.admissions,Payer labels changed 'BPJS ...' -> 'JKN ...' with the SIMRS update on 1 Jul 2025 (same scheme),11736,Harmonised to JKN PBI / JKN Non-PBI; original in payer_raw,calendar file
+id.admissions,Ward 'IGD' = admitted but never reached a ward (all referred out because full),217,Flagged,profiling
+id.admissions,los_days disagrees with admission/discharge dates,199,Flagged,profiling
+id.admissions,"No ICD-10 code (~35/month, plus most October 2026 stays not yet coded)",1082,Flagged,profiling
+prototype,Back-test: compare model with naive baselines and check 80% band coverage,17689,Derived error columns + summary table (no data changed),derived

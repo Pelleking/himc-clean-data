@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+dist/
+.DS_Store
+clean/himc.sqlite
+
+# keep the two compressed data files even if a global ignore rule matches *.gz
+!clean/uk_kingsmere/spells.csv.gz
+!src/himc_mcp/data/himc.sqlite.gz

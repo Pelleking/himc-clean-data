@@ -1,0 +1,13 @@
+ward_code,ward_name,service,beds_before_kris,beds_from_1jul2025,service_en
+MWR,Mawar,Penyakit Dalam,48,40,Internal medicine
+MLT,Melati,Penyakit Dalam,32,28,Internal medicine
+AGR,Anggrek,Bedah,36,30,Surgery
+DHL,Dahlia,Bedah,24,22,Surgery
+CMP,Cempaka,Anak,36,32,Paediatrics
+TRT,Teratai,Kebidanan & Kandungan,34,30,Obstetrics & gynaecology
+PRN,Perinatologi,Perinatologi,16,16,Newborn care
+FLB,Flamboyan,Paru,20,18,Pulmonology
+KNG,Kenanga,Saraf,24,22,Neurology
+BGV,Bougenville,Jantung,18,16,Cardiology
+WJK,Paviliun Wijaya Kusuma,VIP,22,22,VIP
+ICU,Instalasi Rawat Intensif,Intensif,28,28,Intensive care
